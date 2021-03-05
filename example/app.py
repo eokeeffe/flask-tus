@@ -20,9 +20,30 @@ app.config.update({
     }
 })
 
+class FlaskTusExtended(FlaskTus):
+    def on_complete(self,upload_uuid=None):
+        if(upload_uuid==None):
+            return
+        else:
+            upload = self.repo.find_by(upload_uuid=upload_uuid)[0]
+            uuid = upload.upload_uuid
+            path = upload.path
+            filename = upload.filename
+            # need to clean the file, make sure it's ok for filesystem storage
+            correct_filename = secure_filename(filename)
+            p = Path(path)
+            # reconstruct the path now
+            full_path = p.root
+            for a in p.parts[:-1]: full_path = os.path.join(full_path,a)
+            #create directory structure if not already exists
+            Path(full_path).mkdir(parents=True, exist_ok=True)
+            # change the name of the file to the original filename
+            new_path = os.path.join(full_path, correct_filename)
+            # do the renaming and move in 1
+            Path(path).rename(new_path)
 
 db = MongoEngine(app)
-flask_tus = FlaskTus(app, model=MongoengineModel, db=db)
+flask_tus = FlaskTusExtended(app, model=MongoengineModel, db=db)
 
 
 @app.route('/')

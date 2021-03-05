@@ -112,7 +112,7 @@ class FlaskTus(object):
 
             return delete_response()
 
-    def on_create(self):
+    def on_create(self,upload_uuid=None):
         # Callback for creation of upload
         pass
 
