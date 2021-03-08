@@ -101,7 +101,7 @@ class FlaskTus(object):
             upload.append_chunk(chunk)
 
             if upload.offset == upload.length:
-                self.on_complete()
+                self.on_complete(upload_uuid)
 
             return patch_response(upload)
 
